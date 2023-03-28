@@ -1,0 +1,68 @@
+import datetime
+import sys
+
+from utils import clean_id
+
+
+def load_xls(fn):
+    'Parse .xls file at `fn`.  Yield one row per data row in the sheet.'
+
+    import xlrd
+
+    def convert_cell(c):
+        'Return properly-typed value for xls Cell `c`.'
+        if c.ctype == xlrd.XL_CELL_NUMBER:
+            v = int(c.value)
+            if v != c.value:
+                return c.value
+            return v
+
+        if c.ctype == xlrd.XL_CELL_DATE:
+            t = xlrd.xldate.xldate_as_tuple(c.value, 0)
+            dt = datetime.datetime(*t)
+            return dt.isoformat(sep=' ')
+
+        if c.ctype == xlrd.XL_CELL_BOOLEAN:
+            return bool(c.value)
+
+        if c.ctype == xlrd.XL_CELL_ERROR:
+            print(f'error: {c.value}', file=sys.stderr)
+            return f'error: {c.value}'
+
+        return c.value.strip()
+
+    wb = xlrd.open_workbook(fn, logfile=sys.stderr)
+
+    for sheet in wb:
+        hdrs = [clean_id(convert_cell(c)).lower() for c in sheet.row(0)]
+
+        for i in range(1, sheet.nrows):
+            yield sheet.name, dict(zip(hdrs, [convert_cell(c) for c in sheet.row(i)]))
+
+
+def load_xlsx(fn):
+    'Parse .xlsx file at `fn`.  Yield one row per data row in the sheet.'
+
+    import openpyxl
+
+    def convert_cell(c):
+        if c.value is None:
+            return None
+        if isinstance(c.value, str):
+            return c.value.strip()
+        return c.value
+
+    wb = openpyxl.load_workbook(fn, data_only=True, read_only=True)
+
+    for sheet in wb.worksheets:
+        if sheet.max_row <= 1:
+            continue
+
+        tblname = clean_id(sheet.title)
+        print(fn, tblname, sheet.max_row, file=sys.stderr)
+
+        rows = sheet.iter_rows()
+        hdrs = [clean_id(convert_cell(c)).lower() for c in next(rows) if c.value is not None]
+
+        for row in rows:
+            yield tblname, dict(zip(hdrs, [convert_cell(c) for c in row]))
