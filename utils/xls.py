@@ -59,7 +59,6 @@ def load_xlsx(fn):
             continue
 
         tblname = clean_id(sheet.title)
-        print(fn, tblname, sheet.max_row, file=sys.stderr)
 
         rows = sheet.iter_rows()
         hdrs = [clean_id(convert_cell(c)).lower() for c in next(rows) if c.value is not None]
