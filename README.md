@@ -10,7 +10,7 @@ This script parses these files and generates JSONL, structured as a single table
 
 ## Requirements
 
-- Python 3.7, and these external modules
+- Python 3.7, and these external modules:
     - python-dateutil
     - BeautifulSoup
     - xlrd
