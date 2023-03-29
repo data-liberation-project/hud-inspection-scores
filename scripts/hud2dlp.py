@@ -147,7 +147,7 @@ def main(*filenames):
 
         if 'multifamily' in fn or 'public' in fn:
             processfunc = process_hudpis
-        elif 'MF' in fn:
+        elif 'mf_' in fn.lower():
             processfunc = process_rems
         else:
             stderr('unknown file to parse', fn)
