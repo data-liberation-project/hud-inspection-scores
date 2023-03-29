@@ -30,14 +30,14 @@ def maybe_download(url, outdir):
     fullpath = Path(outdir)/fn
 
     if fullpath.exists():
-        if fullpath.stat().st_size == size:
+        oldsize = fullpath.stat().st_size
+        if oldsize == size:
             print('exists, skipping', fn)
             return
 
-        # use size in name
-        fn = f'{mod}-{size}-' + Path(url).name
+        print(f'{fn} size was {oldsize}, is now {size}')
 
-    print('getting', size, mod, fn)
+    print(f'downloading {fn} dated {mod}')
 
     with urllib.request.urlopen(url) as resp:
         with open(fullpath, 'wb') as fp:
