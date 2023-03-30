@@ -23,4 +23,5 @@ To download new data files from HUD:
     make download   # download new raw .xls files, if any
     make commit     # commit raw data
     make parse      # parse from .xls/x to .jsonl
-    make transform  # combine all .jsonl into toplevel hud-properties.jsonl and hud-inspections.jsonl
+    make combine    # combine all .jsonl into toplevel hud-properties.jsonl and hud-inspections.jsonl
+    make package    # generate .jsonl.zip and .csv.zip

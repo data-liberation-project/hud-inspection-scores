@@ -9,11 +9,12 @@ from utils import load
 def main(*filenames):
     rows = []  # list of (fn, rowdict)
     for fn in filenames:
-        print(fn, file=sys.stderr)
-        rows.extend(list(load(fn)))
+        filerows = list(load(fn))
+        print(f'{fn} has {len(filerows)} rows', file=sys.stderr)
+        rows.extend(filerows)
 
-    print(f'outputting {len(rows)} to stdout', file=sys.stderr)
 
+    # get sum of all headers
     hdrs = []
     for fn, r in rows:
         for k in r.keys():

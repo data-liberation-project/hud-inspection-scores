@@ -8,7 +8,7 @@ XLSX_FILES := $(wildcard raw/*.xlsx)
 JSONL_FILES := $(patsubst %.xls, %.jsonl, $(XLS_FILES))
 JSONL_FILES += $(patsubst %.xlsx, %.jsonl, $(XLSX_FILES))
 
-all: download commit parse transform
+all: download parse combine commit package
 
 download:  # download any missing .xls/x files
 	scripts/get-matching-links.py ${PIS_URL} .xls .xlsx | scripts/download-urls.py ${RAWDATADIR}/
@@ -16,13 +16,19 @@ download:  # download any missing .xls/x files
 
 parse: $(JSONL_FILES)
 
-transform:
+combine:
 	scripts/hud2dlp.py raw/*.jsonl
+
+package: hud-inspections.jsonl.zip hud-inspections.csv.zip
 
 commit:
 	git add ${RAWDATADIR}/*.xls*
 	git commit -m 'new downloads'
+	git add hud-*.jsonl
+	git commit -m 'updated output jsonl'
 
+hud-inspections.%.zip: hud-properties.% hud-inspections.%
+	zip $@ $^
 
 %.jsonl: %.xls
 	scripts/xls2jsonl.py $<
@@ -30,5 +36,8 @@ commit:
 %.jsonl: %.xlsx
 	scripts/xls2jsonl.py $<
 
+%.csv: %.jsonl
+	scripts/tocsv.py $< > $@
+
 clean:
-	rm -f raw/*.jsonl raw/*.jsonl hud-*.jsonl
+	rm -f raw/*.jsonl raw/*.jsonl hud-*.jsonl hud-*.csv hud-*.zip
