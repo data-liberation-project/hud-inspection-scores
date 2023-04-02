@@ -68,8 +68,6 @@ def dedup(table, key, row, origin=''):
         d[k][origin] = v
 
 
-
-
 # mapping of source .xls header to cleaned column name
 rems_cols = {
     'rems_property_id'          : 'property_id',

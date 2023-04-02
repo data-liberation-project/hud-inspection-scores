@@ -17,7 +17,7 @@ download:  # download any missing .xls/x files
 parse: $(JSONL_FILES)
 
 combine:
-	scripts/hud2dlp.py raw/*.jsonl
+	PYTHONPATH=. scripts/hud2dlp.py raw/*.jsonl
 
 package: hud-inspections.jsonl.zip hud-inspections.csv.zip
 
