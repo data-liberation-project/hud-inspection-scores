@@ -1,4 +1,4 @@
 python-dateutil
-BeautifulSoup
+beautifulsoup4
 xlrd
 openpyxl
