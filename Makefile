@@ -1,43 +1,48 @@
 
 REMS_URL=https://www.hud.gov/program_offices/housing/mfh/rems/remsinspecscores/remsphysinspscores
 PIS_URL=https://www.huduser.gov/portal/datasets/pis.html
-RAWDATADIR=raw/
+FETCHED=data/fetched
+CONVERTED=data/converted
+OUTPUT=data/output
 
-XLS_FILES := $(wildcard raw/*.xls)
-XLSX_FILES := $(wildcard raw/*.xlsx)
-JSONL_FILES := $(patsubst %.xls, %.jsonl, $(XLS_FILES))
-JSONL_FILES += $(patsubst %.xlsx, %.jsonl, $(XLSX_FILES))
+XLS_FILES := $(wildcard ${FETCHED}/*)
+JSONL_FILES := $(patsubst ${FETCHED}/%, ${CONVERTED}/%-1.jsonl, $(XLS_FILES))
 
-all: download parse combine commit package
+OUTPUT_JSONL=${OUTPUT}/hud-properties.jsonl ${OUTPUT}/hud-inspections.jsonl
+
+
+help:
+	@echo 'Run these commands separately and in order:'
+	@echo '  make download'
+	@echo '  make parse'
+	@echo '  make combine'
+	@echo '  make package'
 
 download:  # download any missing .xls/x files
-	scripts/get-matching-links.py ${PIS_URL} .xls .xlsx | scripts/download-urls.py ${RAWDATADIR}/
-	scripts/get-matching-links.py ${REMS_URL} .xls .xlsx | scripts/download-urls.py ${RAWDATADIR}/
+	PYTHONPATH=. scripts/get-matching-links.py ${PIS_URL} .xls .xlsx | PYTHONPATH=. scripts/download-urls.py ${FETCHED}/
+	PYTHONPATH=. scripts/get-matching-links.py ${REMS_URL} .xls .xlsx | PYTHONPATH=. scripts/download-urls.py ${FETCHED}/
 
 parse: $(JSONL_FILES)
 
-combine:
-	PYTHONPATH=. scripts/hud2dlp.py raw/*.jsonl
+combine: ${OUTPUT_JSONL}
 
-package: hud-inspections.jsonl.zip hud-inspections.csv.zip
+package: ${OUTPUT}/hud-inspections.jsonl.zip ${OUTPUT}/hud-inspections.csv.zip
 
-commit:
-	git add ${RAWDATADIR}/*.xls*
-	git commit -m 'new downloads'
-	git add hud-*.jsonl
-	git commit -m 'updated output jsonl'
+${OUTPUT_JSONL}: ${JSONL_FILES}
+	PYTHONPATH=. scripts/hud2dlp.py ${CONVERTED}/*.jsonl
 
-hud-inspections.%.zip: hud-properties.% hud-inspections.%
+${OUTPUT}/hud-inspections.%.zip: ${OUTPUT}/hud-properties.% ${OUTPUT}/hud-inspections.%
 	zip $@ $^
 
-%.jsonl: %.xls
-	scripts/xls2jsonl.py $<
-
-%.jsonl: %.xlsx
-	scripts/xls2jsonl.py $<
+${CONVERTED}/%-1.jsonl: ${FETCHED}/%
+	PYTHONPATH=. scripts/xls2jsonl.py $<
 
 %.csv: %.jsonl
-	scripts/tocsv.py $< > $@
+	PYTHONPATH=. scripts/tocsv.py $< > $@
 
 clean:
-	rm -f raw/*.jsonl raw/*.jsonl hud-*.jsonl hud-*.csv hud-*.zip
+	rm -f ${CONVERTED}/* ${OUTPUT}/* data/aux/*
+
+.PRECIOUS: ${JSONL_FILES} ${OUTPUT_JSONL}
+
+.PHONY: clean download

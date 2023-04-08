@@ -21,7 +21,6 @@ This script parses these files and generates JSONL, structured as a single table
 To download new data files from HUD:
 
     make download   # download new raw .xls files, if any (20s)
-    make commit     # commit raw data
     make parse      # parse from .xls/x to .jsonl (100s)
     make combine    # combine all .jsonl into toplevel jsonl (200s)
     make package    # generate .jsonl.zip and .csv.zip

@@ -148,7 +148,8 @@ def process_hudpis(row):
 
 
 def main(*filenames):
-    outputter = JsonOutputter('hud')
+    outputter = JsonOutputter('data/output/hud')
+    auxoutputter = JsonOutputter('data/aux/hud')
 
     for fn in filenames:
         stderr(fn)
@@ -169,11 +170,11 @@ def main(*filenames):
                     propid = stringify(outputrow.get('property_id'))
                     if tblname == 'properties':
                         for duprow in dedup(properties, propid, outputrow, origin=origin):
-                            outputter.output('properties-diffs', duprow)
+                            auxoutputter.output('properties-diffs', duprow)
                     elif tblname == 'inspections':
                         for duprow in dedup(inspections, (propid, outputrow['date']), outputrow, origin=origin):
                             duprow['origin'] = origin
-                            outputter.output('inspections-diffs', duprow)
+                            auxoutputter.output('inspections-diffs', duprow)
                     else:
                         stderr(f'unknown table "{tblname}"')
 
