@@ -2,20 +2,20 @@
 REMS_URL=https://www.hud.gov/program_offices/housing/mfh/rems/remsinspecscores/remsphysinspscores
 PIS_URL=https://www.huduser.gov/portal/datasets/pis.html
 FETCHED=data/fetched
-CONVERTED=data/converted
+WORKING=data/converted
 OUTPUT=data/output
 
 XLS_FILES := $(wildcard ${FETCHED}/*)
-JSONL_FILES := $(patsubst ${FETCHED}/%, ${CONVERTED}/%-1.jsonl, $(XLS_FILES))
+JSONL_FILES := $(patsubst ${FETCHED}/%, ${WORKING}/%-1.jsonl, $(XLS_FILES))
 
 OUTPUT_JSONL=${OUTPUT}/hud-properties.jsonl ${OUTPUT}/hud-inspections.jsonl
 
 
 help:
-	@echo 'Run these commands separately and in order:'
+	@echo 'These targets will run the pipeline in order:'
 	@echo '  make download'
 	@echo '  make parse'
-	@echo '  make combine'
+	@echo '  make combined'
 	@echo '  make package'
 
 download:  # download any missing .xls/x files
@@ -24,24 +24,24 @@ download:  # download any missing .xls/x files
 
 parse: $(JSONL_FILES)
 
-combine: ${OUTPUT_JSONL}
+combined: ${OUTPUT_JSONL}
 
 package: ${OUTPUT}/hud-inspections.jsonl.zip ${OUTPUT}/hud-inspections.csv.zip
 
 ${OUTPUT_JSONL}: ${JSONL_FILES}
-	scripts/hud2dlp.py ${CONVERTED}/*.jsonl
+	scripts/hud2dlp.py $^
 
 ${OUTPUT}/hud-inspections.%.zip: ${OUTPUT}/hud-properties.% ${OUTPUT}/hud-inspections.%
 	zip $@ $^
 
-${CONVERTED}/%-1.jsonl: ${FETCHED}/%
-	scripts/xls2jsonl.py $<
+${WORKING}/%-1.jsonl: ${FETCHED}/%
+	scripts/xls2jsonl.py ${WORKING}/ $<
 
 %.csv: %.jsonl
 	scripts/tocsv.py $< > $@
 
 clean:
-	rm -f ${CONVERTED}/* ${OUTPUT}/* data/aux/*
+	rm -f ${WORKING}/* ${OUTPUT}/*
 
 .PRECIOUS: ${JSONL_FILES} ${OUTPUT_JSONL}
 

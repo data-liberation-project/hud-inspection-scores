@@ -20,10 +20,10 @@ This script parses these files and generates JSONL, structured as a single table
 
 To download new data files from HUD:
 
-    make download   # download new raw .xls files, if any (20s)
-    make parse      # parse from .xls/x to .jsonl (100s)
-    make combine    # combine all .jsonl into toplevel jsonl (200s)
-    make package    # generate .jsonl.zip and .csv.zip
+    make download    # download new raw .xls files, if any (20s)
+    make parse       # parse from .xls/x to .jsonl (100s)
+    make combined    # combine all .jsonl into toplevel jsonl (200s)
+    make package     # generate .jsonl.zip and .csv.zip
 
 ## Notes on the data
 
@@ -57,3 +57,8 @@ To see all values and their origins within the output data itself (which can be 
 - rows that have `pha_name` (Public Housing Authority name) are from the public housing data; rows without `pha_name` are from the multifamily data.
 - the coding changed in 2020, so 80% of scores are non-numeric (like `69d*`).
 - `location_quality` refers to the geocoding for (lat,long) coordinates, which may be quite far from the actual site.
+- removed ~550 completely empty inspections; additional 4% have an `inspection_id` and a score of either 0 or 100, while the rest were completely empty.
+
+## About the Pipeline
+
+- the saved filenames start with the reported last-modified date from the http response headers

@@ -39,12 +39,12 @@ def load_xls(fn):
         hdrs = [clean_id(convert_cell(c)).lower() for c in sheet.row(0)]
 
         for i in range(1, sheet.nrows):
-            row = {}
+            outrow = {}
             for k, v in zip(hdrs, [convert_cell(c) for c in sheet.row(i)]):
                 if v is not None:
-                    row[k] = v
-            if row:
-                yield sheet.name, row
+                    outrow[k] = v
+            if outrow:
+                yield sheet.name, outrow
 
 
 def load_xlsx(fn):
@@ -73,10 +73,10 @@ def load_xlsx(fn):
         hdrs = [clean_id(convert_cell(c)).lower() for c in next(rows) if c.value is not None]
 
         for row in rows:
-            row = {}
+            outrow = {}
             for k, v in zip(hdrs, [convert_cell(c) for c in row]):
                 if v is not None:
-                    row[k] = v
+                    outrow[k] = v
 
-            if row:
-                yield tblname, row
+            if outrow:
+                yield tblname, outrow

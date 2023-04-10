@@ -23,6 +23,7 @@ class JsonOutputter:
     def output(self, tblname, row):
         if tblname not in self.outputs:
             fn = f'{self.dbname}-{tblname}.jsonl'
+            print('JSONL output to', fn)
             self.outputs[tblname] = open(fn, 'w')
 
         self.outputs[tblname].write(self.encoder.encode(row) + '\n')

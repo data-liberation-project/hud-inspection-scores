@@ -32,10 +32,15 @@ def getonly(d, k):
 
 def singlify(d, keep_diffs=opt_keep_diffs):
     r = {}
+    origins = defaultdict(list)
     for k, v in d.items():
         if not keep_diffs or len(v) == 1:
-            v = list(v.values())[-1]
+            origin, v = list(v.items())[-1]
+            origins[origin].append(k)
         r[k] = v
+
+    r['_origins'] = ' '.join(origins.keys())
+
     return r
 
 
@@ -45,10 +50,15 @@ def stringify(x):
     return str(x)
 
 
+def boiled(x):
+    return str(x).lower()
+
+
 def dedup(table, key, row, origin=''):
-    'Set table[key]=row, ignoring exact duplicates but warning about differences.'
+    'Set table[key]=row, ignoring exact duplicates but yield diffs about changed values.'
 
     d = table[key]
+    changes = set()
 
     for k, v in row.items():
         if not v:
@@ -60,8 +70,9 @@ def dedup(table, key, row, origin=''):
         if d[k]:
             oldvalues = list(str(x) for x in d[k].values())
 
-            if str(v).lower() not in tuple(x.lower() for x in oldvalues):
+            if boiled(v) not in tuple(boiled(x) for x in oldvalues):
                 yield dict(origin=origin, attr=k, oldvalue=oldvalues[-1], newvalue=v, **row)
+                changes.add(k)
             else:
                 continue  # an existing value matches
 
@@ -80,7 +91,7 @@ rems_cols = {
 }
 
 rems_unused_cols = set([
-        'state_name_text'
+    'state_name_text'
 ])
 
 def process_rems(row):
@@ -94,9 +105,9 @@ def process_rems(row):
     for i in [1,2,3]:
         r = {}
         r['property_id'] = prop['property_id']
-        r['inspection_id'] = row.pop(f'inspection_id_{i}')
-        r['date'] = parse_date(row.pop(f'release_date_{i}'))
-        r['score'] = row.pop(f'inspection_score{i}')
+        r['inspection_id'] = row.pop(f'inspection_id_{i}', None)
+        r['date'] = parse_date(row.pop(f'release_date_{i}', None))
+        r['score'] = row.pop(f'inspection_score{i}', None)
         if r['inspection_id'] or r['date'] or r['score']:
             yield 'inspections', r
 
@@ -133,13 +144,17 @@ def process_hudpis(row):
     prop = {v:row.pop(k) for k, v in pis_cols.items() if k in row}
     prop['property_id'] = stringify(prop['property_id'])
 
-    yield 'properties', prop
-    yield 'inspections', dict(
+    r = dict(
         inspection_id=row.pop('inspection_id', None),
-        property_id=prop.get('property_id'),
-        date=parse_date(row.pop('inspection_date')),
-        score=row.pop('inspection_score'),
+        property_id=prop.get('property_id', None),
+        date=parse_date(row.pop('inspection_date', None)),
+        score=row.pop('inspection_score', None),
     )
+
+    yield 'properties', prop
+
+    if r['inspection_id'] or r['date'] or r['score']:
+        yield 'inspections', r
 
     remaining = set(row.keys()) - pis_unused_cols
     if remaining:
@@ -149,7 +164,6 @@ def process_hudpis(row):
 
 def main(*filenames):
     outputter = JsonOutputter('data/output/hud')
-    auxoutputter = JsonOutputter('data/aux/hud')
 
     for fn in filenames:
         stderr(fn)
@@ -162,7 +176,7 @@ def main(*filenames):
             stderr('unknown file to parse', fn)
             continue
 
-        origin = fn.split('/')[-1][:20]
+        origin = fn.split('/')[-1][:12]
 
         for dbname, row in load(fn):
             try:
@@ -170,11 +184,11 @@ def main(*filenames):
                     propid = stringify(outputrow.get('property_id'))
                     if tblname == 'properties':
                         for duprow in dedup(properties, propid, outputrow, origin=origin):
-                            auxoutputter.output('properties-diffs', duprow)
+                            outputter.output('properties-diffs', duprow)
                     elif tblname == 'inspections':
                         for duprow in dedup(inspections, (propid, outputrow['date']), outputrow, origin=origin):
                             duprow['origin'] = origin
-                            auxoutputter.output('inspections-diffs', duprow)
+                            outputter.output('inspections-diffs', duprow)
                     else:
                         stderr(f'unknown table "{tblname}"')
 
