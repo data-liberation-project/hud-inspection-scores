@@ -29,7 +29,9 @@ def load_xls(fn):
             print(f'error: {c.value}', file=sys.stderr)
             return f'error: {c.value}'
 
-        return c.value.strip()
+        v = c.value.strip()
+        if v:
+            return v
 
     wb = xlrd.open_workbook(fn, logfile=sys.stderr)
 
@@ -37,7 +39,12 @@ def load_xls(fn):
         hdrs = [clean_id(convert_cell(c)).lower() for c in sheet.row(0)]
 
         for i in range(1, sheet.nrows):
-            yield sheet.name, dict(zip(hdrs, [convert_cell(c) for c in sheet.row(i)]))
+            row = {}
+            for k, v in zip(hdrs, [convert_cell(c) for c in sheet.row(i)]):
+                if v is not None:
+                    row[k] = v
+            if row:
+                yield sheet.name, row
 
 
 def load_xlsx(fn):
@@ -49,7 +56,9 @@ def load_xlsx(fn):
         if c.value is None:
             return None
         if isinstance(c.value, str):
-            return c.value.strip()
+            v = c.value.strip()
+            if v:
+                return v
         return c.value
 
     wb = openpyxl.load_workbook(fn, data_only=True, read_only=True)
@@ -64,4 +73,10 @@ def load_xlsx(fn):
         hdrs = [clean_id(convert_cell(c)).lower() for c in next(rows) if c.value is not None]
 
         for row in rows:
-            yield tblname, dict(zip(hdrs, [convert_cell(c) for c in row]))
+            row = {}
+            for k, v in zip(hdrs, [convert_cell(c) for c in row]):
+                if v is not None:
+                    row[k] = v
+
+            if row:
+                yield tblname, row
