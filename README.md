@@ -56,8 +56,9 @@ To see all values and their origins within the output data itself (which can be 
 
 - rows that have `pha_name` (Public Housing Authority name) are from the public housing data; rows without `pha_name` are from the multifamily data.
 - the coding changed in 2020, so 80% of scores are non-numeric (like `69d*`).
-- `location_quality` refers to the geocoding for (lat,long) coordinates, which may be quite far from the actual site.
+- `location_quality` is from HUD; it refers to the geocoding for (lat,long) coordinates, which may be quite far from the actual site.
 - removed ~550 completely empty inspections; additional 4% have an `inspection_id` and a score of either 0 or 100, while the rest were completely empty.
+- `_origins` is a list of filename prefixes that add or change data fields for a property or an inspection.
 
 ## About the Pipeline
 
