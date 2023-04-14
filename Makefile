@@ -29,12 +29,14 @@ combined: ${OUTPUT_JSONL}
 package: ${OUTPUT}/hud-inspections.jsonl.zip ${OUTPUT}/hud-inspections.csv.zip
 
 ${OUTPUT_JSONL}: ${JSONL_FILES}
+	mkdir -p ${OUTPUT}
 	scripts/hud2dlp.py $^
 
 ${OUTPUT}/hud-inspections.%.zip: ${OUTPUT}/hud-properties.% ${OUTPUT}/hud-inspections.%
 	zip $@ $^
 
 ${WORKING}/%-1.jsonl: ${FETCHED}/%
+	mkdir -p ${WORKING}
 	scripts/xls2jsonl.py ${WORKING}/ $<
 
 %.csv: %.jsonl
