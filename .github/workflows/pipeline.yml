@@ -9,6 +9,10 @@ jobs:
   run:
     name: Run
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read|write
+
     steps:
       - name: Checkout this repo
         uses: actions/checkout@v3
