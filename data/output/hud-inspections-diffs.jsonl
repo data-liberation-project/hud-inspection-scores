@@ -67489,3 +67489,17 @@
 {"origin": "2023-11-15-M", "attr": "score", "oldvalue": "64b*", "newvalue": "79b*", "property_id": "800245458", "inspection_id": 714940, "date": "2023-04-06", "score": "79b*"}
 {"origin": "2023-11-15-M", "attr": "score", "oldvalue": "48c*", "newvalue": "60c*", "property_id": "800250527", "inspection_id": 681842, "date": "2023-06-28", "score": "60c*"}
 {"origin": "2023-11-15-M", "attr": "score", "oldvalue": "79b*", "newvalue": "82b*", "property_id": "800250712", "inspection_id": 721248, "date": "2023-07-20", "score": "82b*"}
+{"origin": "2024-10-31-M", "attr": "score", "oldvalue": "79b", "newvalue": "94b", "property_id": "800001444", "inspection_id": 726651, "date": "2023-08-30", "score": "94b"}
+{"origin": "2024-10-31-M", "attr": "score", "oldvalue": "74b", "newvalue": "79b", "property_id": "800001520", "inspection_id": 723778, "date": "2023-09-28", "score": "79b"}
+{"origin": "2024-10-31-M", "attr": "score", "oldvalue": "77c", "newvalue": "82c", "property_id": "800001774", "inspection_id": 718684, "date": "2023-09-08", "score": "82c"}
+{"origin": "2024-10-31-M", "attr": "score", "oldvalue": "87b", "newvalue": "93b", "property_id": "800004279", "inspection_id": 727809, "date": "2023-09-13", "score": "93b"}
+{"origin": "2024-10-31-M", "attr": "score", "oldvalue": "76", "newvalue": "90", "property_id": "800012061", "inspection_id": 900798, "date": "2023-08-21", "score": "90"}
+{"origin": "2024-10-31-M", "attr": "score", "oldvalue": "24", "newvalue": "31", "property_id": "800012279", "inspection_id": 900742, "date": "2023-09-18", "score": "31"}
+{"origin": "2024-10-31-M", "attr": "score", "oldvalue": "59c*", "newvalue": "60c*", "property_id": "800015602", "inspection_id": 727052, "date": "2023-09-06", "score": "60c*"}
+{"origin": "2024-10-31-M", "attr": "score", "oldvalue": "77c*", "newvalue": "84c*", "property_id": "800016063", "inspection_id": 732453, "date": "2023-09-20", "score": "84c*"}
+{"origin": "2024-10-31-M", "attr": "score", "oldvalue": "58c*", "newvalue": "64c*", "property_id": "800016547", "inspection_id": 735954, "date": "2023-09-28", "score": "64c*"}
+{"origin": "2024-10-31-M", "attr": "score", "oldvalue": "76c*", "newvalue": "90c*", "property_id": "800222360", "inspection_id": 694543, "date": "2023-09-29", "score": "90c*"}
+{"origin": "2024-10-31-M", "attr": "score", "oldvalue": "49c", "newvalue": "61b", "property_id": "800248498", "inspection_id": 733497, "date": "2023-08-07", "score": "61b"}
+{"origin": "2024-10-31-M", "attr": "score", "oldvalue": "74c", "newvalue": "76c", "property_id": "800248870", "inspection_id": 721237, "date": "2023-04-20", "score": "76c"}
+{"origin": "2024-10-31-M", "attr": "score", "oldvalue": "79c", "newvalue": "82c", "property_id": "800249794", "inspection_id": 721140, "date": "2023-04-06", "score": "82c"}
+{"origin": "2024-10-31-M", "attr": "score", "oldvalue": "76c", "newvalue": "80c", "property_id": "800251232", "inspection_id": 732795, "date": "2023-07-20", "score": "80c"}
